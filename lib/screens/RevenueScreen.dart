@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter_application/screens/OrderManagementScreen.dart';
 
-class RevenueScreen extends StatelessWidget {
+
+class RevenueScreen extends StatefulWidget {
+  @override
+  State<RevenueScreen> createState() => _RevenueScreenState();
+}
+
+class _RevenueScreenState extends State<RevenueScreen> {
+  String selectedTab = "Doanh thu"; // Trạng thái tab hiện tại
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -13,7 +22,7 @@ class RevenueScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text("28 Tháng 02, 2025 - 16:00", style: TextStyle(color: Colors.white, fontSize: 16)),
-            Text("Nhà Hát Kịch IDECAF: Đức Thượng Công Tử Quận Lê...", style: TextStyle(color: Colors.grey, fontSize: 12)),
+            Text(" Những Thành Phố Mơ Màng Year End 2024...", style: TextStyle(color: Colors.grey, fontSize: 12)),
           ],
         ),
       ),
@@ -22,59 +31,71 @@ class RevenueScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Tabs
+            // Tabs: Doanh thu + Đơn hàng
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _buildTab("Doanh thu", true),
-                _buildTab("Check-in", false),
-                _buildTab("Đơn hàng", false),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selectedTab = "Doanh thu";
+                    });
+                  },
+                  child: _buildTab("Doanh thu", selectedTab == "Doanh thu"),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    // 👉 Điều hướng sang màn hình đơn hàng
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => OrderManagementScreen()),
+                    );
+                  },
+                  child: _buildTab("Đơn hàng", selectedTab == "Đơn hàng"),
+                ),
               ],
             ),
             SizedBox(height: 20),
 
-            // Tổng quan
-            Text("Tổng quan", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-            SizedBox(height: 16),
-
-            // Doanh thu + Vé
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildCircleStat(
-                  title: "Doanh thu",
-                  value: "500.000.000đ",
-                  total: "600.000.000đ",
-                  percent: 78,
-                ),
-                _buildCircleStat(
-                  title: "Số lượng vé đã bán",
-                  value: "1.235 vé",
-                  total: "2000 vé",
-                  percent: 87,
-                ),
-              ],
-            ),
-            SizedBox(height: 16),
-
-            // Bộ lọc thời gian
-            Row(
-              children: [
-                _buildFilter("30 ngày", true),
-                SizedBox(width: 8),
-                _buildFilter("24 giờ", false),
-              ],
-            ),
-            SizedBox(height: 12),
-
-            // Biểu đồ
-            Expanded(child: _buildChart()),
+            // Nội dung doanh thu
+            if (selectedTab == "Doanh thu") ...[
+              Text("Tổng quan", style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+              SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildCircleStat(
+                    title: "Doanh thu",
+                    value: "500.000.000đ",
+                    total: "600.000.000đ",
+                    percent: 78,
+                  ),
+                  _buildCircleStat(
+                    title: "Số lượng vé đã bán",
+                    value: "1.235 vé",
+                    total: "2000 vé",
+                    percent: 87,
+                  ),
+                ],
+              ),
+              SizedBox(height: 16),
+              Row(
+                children: [
+                  _buildFilter("30 ngày", true),
+                  SizedBox(width: 8),
+                  _buildFilter("24 giờ", false),
+                ],
+              ),
+              SizedBox(height: 12),
+              Expanded(child: _buildChart()),
+            ],
           ],
         ),
       ),
     );
   }
 
+  // 👉 Tab builder
   Widget _buildTab(String label, bool selected) {
     return Column(
       children: [
@@ -85,6 +106,7 @@ class RevenueScreen extends StatelessWidget {
     );
   }
 
+  // 👉 Thống kê dạng vòng tròn
   Widget _buildCircleStat({required String title, required String value, required String total, required int percent}) {
     return Container(
       width: 160,
@@ -131,6 +153,7 @@ class RevenueScreen extends StatelessWidget {
     );
   }
 
+  // 👉 Nút lọc thời gian
   Widget _buildFilter(String label, bool selected) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -142,6 +165,7 @@ class RevenueScreen extends StatelessWidget {
     );
   }
 
+  // 👉 Biểu đồ doanh thu
   Widget _buildChart() {
     return BarChart(
       BarChartData(

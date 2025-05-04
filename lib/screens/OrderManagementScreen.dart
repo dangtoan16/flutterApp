@@ -50,7 +50,6 @@ class OrderManagementScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _buildTabButton("Doanh thu", false),
-                _buildTabButton("Check-in", false),
                 _buildTabButton("Đơn hàng", true),
               ],
             ),
